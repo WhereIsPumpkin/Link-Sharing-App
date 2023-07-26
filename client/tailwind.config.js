@@ -10,6 +10,7 @@ export default {
         'dark-grey': 'var(--dark-grey, #333)',
         customGrey: '#737373',
         customPurple: '#633CFF',
+        lightGrey: '#FAFAFA',
       },
     },
   },

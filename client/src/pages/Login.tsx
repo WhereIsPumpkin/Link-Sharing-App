@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const navigate = useNavigate();
   return (
-    <div className='p-8 flex flex-col gap-16 font-defaultFont'>
+    <div className='h-screen p-8 flex flex-col gap-16 font-defaultFont md:p-0 md:flex md:justify-center md:items-center md:bg-[#FAFAFA]'>
       <header className='flex items-center gap-2'>
         <img src={smallLogo} alt='devlinks logo' />
         <img src={logoText} alt='devlinks logo text' />
       </header>
 
-      <main>
+      <main className='md:bg-white rounded-xl md:p-10 '>
         <h1 className='text-2xl text-dark-grey font-bold mb-2'>Login</h1>
         <p className='text-customGrey leading-6'>
           Add your details below to get back into the app
@@ -71,7 +71,7 @@ const Login = () => {
             onClick={() => {
               navigate('/register');
             }}
-            className=' text-customPurple '
+            className=' text-customPurple md:cursor-pointer'
           >
             Create account
           </span>
