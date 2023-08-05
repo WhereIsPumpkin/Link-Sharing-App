@@ -3,9 +3,34 @@ import logoText from '../assets/devlinks-textSmall.svg';
 import emailIcon from '../assets/icon-email.svg';
 import passwordIcon from '../assets/icon-password.svg';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+type LoginInputs = {
+  email: string;
+  password: string;
+};
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const schema = yup.object().shape({
+    email: yup.string().email('Email is invalid').required(`Can’t be empty`),
+    password: yup
+      .string()
+      .required('Can’t be empty')
+      .min(6, 'At least 6 characters'),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInputs>({ resolver: yupResolver(schema) });
+
+  const onSubmit = (data: LoginInputs) => console.log(data);
+
   return (
     <div className='h-screen p-8 flex flex-col gap-16 font-defaultFont md:p-0 md:flex md:justify-center md:items-center md:bg-[#FAFAFA]'>
       <header className='flex items-center gap-2'>
@@ -18,7 +43,11 @@ const Login = () => {
         <p className='text-customGrey leading-6'>
           Add your details below to get back into the app
         </p>
-        <form className='mt-10 flex flex-col gap-6'>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='mt-10 flex flex-col gap-6'
+        >
           <div className='flex flex-col gap-1'>
             <label htmlFor='email' className='text-xs text-black'>
               Email address
@@ -31,12 +60,20 @@ const Login = () => {
                 className='absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5'
               />
               <input
+                {...register('email')}
                 type='email'
                 id='email'
                 name='email'
                 placeholder='e.g. alex@email.com'
-                className='border border-gray-300 rounded-lg px-11 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-customGrey '
+                className={`border border-gray-300 rounded-lg px-11 py-3 text-sm w-full focus:outline-none focus:border-2 focus:border-customPurple placeholder-customGrey ${
+                  errors.email && 'focus:border-errorRed  '
+                } `}
               />
+              {errors.email && (
+                <p className='text-errorRed text-sm absolute right-4 top-1/2 -translate-y-1/2'>
+                  {errors.email.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -52,19 +89,31 @@ const Login = () => {
                 className='absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5'
               />
               <input
+                {...register('password')}
                 type='password'
                 id='password'
                 name='password'
                 placeholder='Enter your password'
-                className='border border-gray-300 rounded-lg px-11 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-customGrey '
+                className={`border border-gray-300 rounded-lg px-11 py-3 text-sm w-full focus:outline-none focus:border-2 focus:border-customPurple placeholder-customGrey ${
+                  errors.password && ' focus:border-errorRed '
+                } `}
               />
+              {errors.password && (
+                <p className='text-errorRed text-sm absolute right-4 top-1/2 -translate-y-1/2'>
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
 
-          <button className='bg-customPurple text-white font-semibold rounded-lg py-3'>
+          <button
+            disabled={!!errors.email || !!errors.password}
+            className='bg-customPurple text-white font-semibold rounded-lg py-3 disabled:bg-gray-400'
+          >
             Login
           </button>
         </form>
+
         <p className='text-center mt-6 leading-6 text-customGrey'>
           Don’t have an account? <br />{' '}
           <span

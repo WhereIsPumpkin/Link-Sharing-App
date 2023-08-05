@@ -11,6 +11,7 @@ export default {
         customGrey: '#737373',
         customPurple: '#633CFF',
         lightGrey: '#FAFAFA',
+        errorRed: '#FF3939',
       },
     },
   },
