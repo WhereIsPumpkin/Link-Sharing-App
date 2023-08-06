@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useState } from 'react';
 import * as yup from 'yup';
+import axios from 'axios';
 
 import smallLogo from '../assets/logo-devlinks-small.svg';
 import logoText from '../assets/devlinks-textSmall.svg';
@@ -16,6 +18,8 @@ type RegisterInputs = {
 
 const Register = () => {
   const navigate = useNavigate();
+  // i want that state to wait string i use TS
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   const schema = yup.object().shape({
     email: yup.string().email('Email is invalid').required('Email is required'),
@@ -35,9 +39,14 @@ const Register = () => {
     formState: { errors },
   } = useForm<RegisterInputs>({ resolver: yupResolver(schema) });
 
-  const onSubmit = (data: RegisterInputs) => {
-    console.log(data);
-    // Add your registration logic here
+  const onSubmit = async (data: RegisterInputs) => {
+    try {
+      const response = await axios.post('/api/users/register', data);
+      console.log(response);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      setErrorMsg(error.response.data.message);
+    }
   };
 
   return (
@@ -141,6 +150,8 @@ const Register = () => {
               )}
             </div>
           </div>
+
+          {errorMsg && <p className='text-errorRed text-sm'>{errorMsg}</p>}
 
           <button
             disabled={

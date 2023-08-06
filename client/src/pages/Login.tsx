@@ -1,6 +1,8 @@
 import smallLogo from '../assets/logo-devlinks-small.svg';
 import logoText from '../assets/devlinks-textSmall.svg';
 import emailIcon from '../assets/icon-email.svg';
+import axios from 'axios';
+import { useState } from 'react';
 import passwordIcon from '../assets/icon-password.svg';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -14,13 +16,11 @@ type LoginInputs = {
 
 const Login = () => {
   const navigate = useNavigate();
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   const schema = yup.object().shape({
     email: yup.string().email('Email is invalid').required(`Can’t be empty`),
-    password: yup
-      .string()
-      .required('Can’t be empty')
-      .min(6, 'At least 6 characters'),
+    password: yup.string().required('Can’t be empty'),
   });
 
   const {
@@ -29,7 +29,15 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginInputs>({ resolver: yupResolver(schema) });
 
-  const onSubmit = (data: LoginInputs) => console.log(data);
+  const onSubmit = async (data: LoginInputs) => {
+    try {
+      const res = await axios.post('/api/users/login', data);
+      console.log(res.data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      setErrorMsg(error.response.data);
+    }
+  };
 
   return (
     <div className='h-screen p-8 flex flex-col gap-16 font-defaultFont md:p-0 md:flex md:justify-center md:items-center md:bg-[#FAFAFA]'>
@@ -64,6 +72,7 @@ const Login = () => {
                 type='email'
                 id='email'
                 name='email'
+                autoComplete='email'
                 placeholder='e.g. alex@email.com'
                 className={`border border-gray-300 rounded-lg px-11 py-3 text-sm w-full focus:outline-none focus:border-2 focus:border-customPurple placeholder-customGrey ${
                   errors.email && 'focus:border-errorRed  '
@@ -91,6 +100,7 @@ const Login = () => {
               <input
                 {...register('password')}
                 type='password'
+                autoComplete='current-password'
                 id='password'
                 name='password'
                 placeholder='Enter your password'
@@ -105,6 +115,8 @@ const Login = () => {
               )}
             </div>
           </div>
+
+          {errorMsg && <p className='text-errorRed text-sm'>{errorMsg}</p>}
 
           <button
             disabled={!!errors.email || !!errors.password}
