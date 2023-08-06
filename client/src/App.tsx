@@ -1,16 +1,14 @@
-import { Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
 import axios from 'axios';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   axios.defaults.baseURL = 'http://localhost:5000';
+  axios.defaults.withCredentials = true;
 
   return (
-    <Routes>
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
-    </Routes>
+    <>
+      <Outlet />
+    </>
   );
 }
 

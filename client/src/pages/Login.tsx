@@ -7,6 +7,7 @@ import passwordIcon from '../assets/icon-password.svg';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import useUserStore from '../store/user';
 import * as yup from 'yup';
 
 type LoginInputs = {
@@ -17,6 +18,7 @@ type LoginInputs = {
 const Login = () => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const store = useUserStore.getState();
 
   const schema = yup.object().shape({
     email: yup.string().email('Email is invalid').required(`Can’t be empty`),
@@ -32,7 +34,8 @@ const Login = () => {
   const onSubmit = async (data: LoginInputs) => {
     try {
       const res = await axios.post('/api/users/login', data);
-      console.log(res.data);
+      store.set(res.data);
+      navigate('/');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setErrorMsg(error.response.data);
